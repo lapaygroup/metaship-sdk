@@ -38,7 +38,7 @@
   - [ ] [Список заказов](#orders-list)
   - [ ] [Информация о заказе](#order-info)
   - [ ] [Удаление заказа](#order-delete)   
-  - [ ] [История статусов заказа](#order-statuses)
+  - [x] [История статусов заказа](#order-statuses)
 - [Партии](#batch)   
   - [ ] [Создание партии](#batch-create)   
   - [ ] [Список партий](#batch-list)   
@@ -49,7 +49,8 @@
     - [ ] [Получение АПП](#docs-app)   
 
 <a name="links"><h1>Changelog</h1></a>
-- 0.2.0 - Первая Alfa-версия SDK.  
+- 0.2.1 - Добавлен метод получения статусов заказа, добавлен OrderStatusHelper;   
+- 0.2.0 - Первая Alfa-версия SDK.   
 
 # Установка  
 Для установки можно использовать менеджер пакетов Composer
@@ -768,7 +769,7 @@ catch (\Exception $e) {
 - *Order* - Параметры заказа, объект [LapayGroup\MetaShipSdk\Entity\Order](src/Entity/Order.php).
 
 **Выходные параметры:**
-- *array* - список
+- *array* - данные созданного заказа
 
 **Примеры вызова:**
 ```php
@@ -819,7 +820,13 @@ catch (\Exception $e) {
         $result = $Client->createOrder($order);
         /*
          Успешный ответ
-         // TODO
+         Array
+         (
+            [id] => 27f54969-f423-42e5-9975-b48ced0f6626
+            [type] => PendingOrder
+            [url] => /v2/pending_orders/27f54969-f423-42e5-9975-b48ced0f6626
+            [status] => 202
+         )
          
          Ответ с ошибкой
          Array
@@ -891,6 +898,47 @@ catch (\Exception $e) {
                 )
 
             )
+         */
+    }
+
+    catch (\LapayGroup\MetaShipSdk\Exceptions\MetaShipException $e) {
+        // Обработка ошибки вызова API MetaShip
+        // $e->getMessage(); текст ошибки 
+        // $e->getCode(); http код ответа сервиса MetaShip
+        // $e->getRawResponse(); // ответ сервера MetaShip как есть (http request body)
+    }
+    
+    catch (\Exception $e) {
+        // Обработка исключения
+    }
+```
+
+<a name="order-statuses"><h3>История статусов заказа</h3></a>  
+Метод **getOrderStatuses** возвращает список статусов заказа
+
+**Входные параметры:**
+- *string order_id* - uuid заказа в системе MetaShip.
+
+**Выходные параметры:**
+- *array* - список статусов
+
+**Примеры вызова:**
+```php
+<?php
+    try {
+        $Client = new LapayGroup\MetaShipSdk\Client('9e687410-62d5-5139-b712-37e7766922c6', '2091dcf8c89e12a9b8815b9e2d48d212fc9b4082d2e54a0ea4e5da260f5244ba20541d6b2e829133', 60, \LapayGroup\MetaShipSdk\Client::API_URI_TEST);
+        $Client->getJwt();
+        $result = $Client->getOrderStatuses('27f54969-f423-42e5-9975-b48ced0f6626');
+        
+        // Проверка статуса на признак "конечный"
+        if (\LapayGroup\MetaShipSdk\Helpers\OrderStatusHelper::isFinal($result[0]['status'])) {
+            // Помечаем заказ, что проверка статусов больше не требуется
+        }
+        
+        /*
+         Успешный ответ 
+         // TODO
+         
          */
     }
 

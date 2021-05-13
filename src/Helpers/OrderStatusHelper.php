@@ -1,8 +1,8 @@
 <?php
 
-namespace LapayGroup\MetaShipSdk\Enum;
+namespace LapayGroup\MetaShipSdk\Helpers;
 
-class OrderStatus
+class OrderStatusHelper
 {
     /**
      * Возвращает признак конечный статус или нет
@@ -12,7 +12,7 @@ class OrderStatus
      */
     static public function isFinal($code)
     {
-        if (in_array($code, [])) { // TODO добавить конечные статусы
+        if (in_array($code, ['cancelled', 'delivered', 'error','return-completed'])) {
             return true;
         } else {
             return false;

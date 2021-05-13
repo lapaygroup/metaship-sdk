@@ -275,4 +275,17 @@ class Client implements LoggerAwareInterface
     {
         return $this->callApi('POST', '/v2/orders', $order->asArr());
     }
+
+    /**
+     * История статусов заказа
+     *
+     * @param string $order_id - id заказа в системе MetaShip
+     * @return array
+     * @throws MetaShipException
+     * @throws \InvalidArgumentException
+     */
+    public function getOrderStatuses($order_id)
+    {
+        return $this->callApi('GET', "/v2/orders/$order_id/statuses");
+    }
 }
