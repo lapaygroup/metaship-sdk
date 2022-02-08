@@ -37,7 +37,7 @@
   - [x] [Создание заказа](#order-create)   
   - [ ] [Список заказов](#orders-list)
   - [x] [Информация о заказе](#order-info)
-  - [ ] [Удаление заказа](#order-delete)   
+  - [x] [Удаление заказа](#order-delete)   
   - [x] [История статусов заказа](#order-statuses)
 - [Партии](#batch)   
   - [ ] [Создание партии](#batch-create)   
@@ -49,6 +49,7 @@
     - [ ] [Получение АПП](#docs-app)   
 
 <a name="links"><h1>Changelog</h1></a>
+- 0.3.0 - Подробное описание [тут](https://github.com/lapaygroup/metaship-sdk/releases/tag/0.3.0);
 - 0.2.1 - Добавлен метод получения статусов заказа, добавлен OrderStatusHelper;   
 - 0.2.0 - Первая Alfa-версия SDK.   
 
