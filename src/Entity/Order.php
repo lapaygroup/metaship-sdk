@@ -426,7 +426,7 @@ class Order
      */
     public function setTariffCode($tariff_code)
     {
-        $this->tariff_code = $tariff_code;
+        $this->tariff_code = (string)$tariff_code;
     }
 
     /**

@@ -24,9 +24,9 @@
 - [Склады](#warehouses)  
   - [x] [Создание склада](#warehouse-create)   
   - [x] [Список складов](#warehouse-list)   
-  - [ ] [Информация о складе](#warehouse-info)   
+  - [x] [Информация о складе](#warehouse-info)   
   - [ ] [Обновление склада](#warehouse-update)   
-  - [ ] [Удаление склада](#warehouse-delete)   
+  - [x] [Удаление склада](#warehouse-delete)   
 - [Магазины](#shops)    
   - [x] [Создание магазина](#shop-create)  
   - [x] [Список магазинов](#shop-list)   
@@ -36,7 +36,7 @@
 - [Заказы](#orders)
   - [x] [Создание заказа](#order-create)   
   - [ ] [Список заказов](#orders-list)
-  - [ ] [Информация о заказе](#order-info)
+  - [x] [Информация о заказе](#order-info)
   - [ ] [Удаление заказа](#order-delete)   
   - [x] [История статусов заказа](#order-statuses)
 - [Партии](#batch)   
@@ -663,6 +663,87 @@ catch (\Exception $e) {
 ```
 
 
+<a name="warehouse-info"><h3>Получение склада</h3></a>  
+Метод **getWarehouse** возвращает данные склада
+
+**Входные параметры:**
+- *string* warehouse_id - uuid склада в системе MetaShip.
+
+**Выходные параметры:**
+- *array* - данные склада
+
+**Примеры вызова:**
+```php
+<?php
+    try {
+        $Client = new LapayGroup\MetaShipSdk\Client('9e687410-62d5-5139-b712-37e7766922c6', '2091dcf8c89e12a9b8815b9e2d48d212fc9b4082d2e54a0ea4e5da260f5244ba20541d6b2e829133', 60, \LapayGroup\MetaShipSdk\Client::API_URI_TEST);
+        $Client->getJwt();
+        $result = $Client->getWarehouse('13472d9c-fc88-4a1f-ab03-335bd5052dee');
+        /*
+         * Успешный ответ
+         * Array
+            (
+                [id] => 13472d9c-fc88-4a1f-ab03-335bd5052dee
+                [number] => WH-32959
+                [name] => Тестовый склад 1
+                [visibility] => 1
+                [address] => Array
+                    (
+                        [raw] => 115569, г Москва, Орехово-Борисово Северное р-н, Каширское шоссе, д 86А
+                    )
+    
+                [contact] =>
+                [workingTime] =>
+                [pickup] =>
+                [dpdPickupNum] =>
+            )
+         */ 
+    }
+
+    catch (\LapayGroup\MetaShipSdk\Exceptions\MetaShipException $e) {
+        // Обработка ошибки вызова API MetaShip
+        // $e->getMessage(); текст ошибки 
+        // $e->getCode(); http код ответа сервиса MetaShip
+        // $e->getRawResponse(); // ответ сервера MetaShip как есть (http request body)
+    }
+    
+    catch (\Exception $e) {
+        // Обработка исключения
+    }
+```
+
+
+<a name="warehouse-delete"><h3>Удаление склада</h3></a>  
+Метод **deleteWarehouse** удаляет склад.
+
+**Входные параметры:**
+- *string* warehouse_id - uuid склада в системе MetaShip.
+
+**Выходные параметры:**
+- *boolean* - при успешном удалении true
+
+**Примеры вызова:**
+```php
+<?php
+    try {
+        $Client = new LapayGroup\MetaShipSdk\Client('9e687410-62d5-5139-b712-37e7766922c6', '2091dcf8c89e12a9b8815b9e2d48d212fc9b4082d2e54a0ea4e5da260f5244ba20541d6b2e829133', 60, \LapayGroup\MetaShipSdk\Client::API_URI_TEST);
+        $Client->getJwt();
+        $result = $Client->deleteWarehouse('13472d9c-fc88-4a1f-ab03-335bd5052dee');
+    }
+
+    catch (\LapayGroup\MetaShipSdk\Exceptions\MetaShipException $e) {
+        // Обработка ошибки вызова API MetaShip
+        // $e->getMessage(); текст ошибки 
+        // $e->getCode(); http код ответа сервиса MetaShip
+        // $e->getRawResponse(); // ответ сервера MetaShip как есть (http request body)
+    }
+    
+    catch (\Exception $e) {
+        // Обработка исключения
+    }
+```
+
+
 <a name="shops"><h1>Магазины</h1></a>
 Список методов для работы с магазинами MetaShip.       
 
@@ -802,6 +883,10 @@ catch (\Exception $e) {
         // Доставка до ПВЗ
         $order->setDeliveryType(\LapayGroup\MetaShipSdk\Enum\DeliveryType::DELIVERY_POINT);
         $order->setPvzCode('12669');
+        
+        // Доставка в отделение Почты России
+        $order->setDeliveryType(\LapayGroup\MetaShipSdk\Enum\DeliveryType::POST_OFFICE);
+        $order->setAddress('115551 Каширское шоссе 94к2, кв. 1');
    
         // Создаем товар для места
         $item = new \LapayGroup\MetaShipSdk\Entity\Item();
@@ -913,11 +998,184 @@ catch (\Exception $e) {
     }
 ```
 
+<a name="order-info"><h3>Информация о заказе</h3></a>  
+Метод **getOrderInfo** возвращает информацию о заказе
+
+**Входные параметры:**
+- *string* order_id - uuid заказа в системе MetaShip.
+
+**Выходные параметры:**
+- *array* - данные заказа
+
+**Примеры вызова:**
+```php
+<?php
+    try {
+        $Client = new LapayGroup\MetaShipSdk\Client('9e687410-62d5-5139-b712-37e7766922c6', '2091dcf8c89e12a9b8815b9e2d48d212fc9b4082d2e54a0ea4e5da260f5244ba20541d6b2e829133', 60, \LapayGroup\MetaShipSdk\Client::API_URI_TEST);
+        $Client->getJwt();
+        $result = $Client->getOrderInfo('6133fe6b-f8af-43e7-acab-5610d16dc662');
+        /* Успешный ответ 
+         Array
+          (
+              [id] => 6133fe6b-f8af-43e7-acab-5610d16dc662
+              [number] => MS-9995649703
+              [addressTo] =>
+              [data] => Array
+                  (
+                      [request] => Array
+                          (
+                              [warehouse] => Array
+                                  (
+                                      [id] => cb4b1999-063f-4824-91d1-90301bc6971a
+                                  )
+      
+                              [shop] => Array
+                                  (
+                                      [id] => 6d583c5d-0407-446a-ba69-741907f8171b
+                                      [number] => ORD-123
+                                      [barcode] =>
+                                  )
+      
+                              [payment] => Array
+                                  (
+                                      [type] => PayOnDelivery
+                                      [declaredValue] => 4999.98
+                                      [deliverySum] => 0
+                                      [attribute] =>
+                                  )
+      
+                              [dimension] => Array
+                                  (
+                                      [length] => 10
+                                      [width] => 10
+                                      [height] => 10
+                                  )
+      
+                              [weight] => 1
+                              [delivery] => Array
+                                  (
+                                      [type] => PostOffice
+                                      [service] => RussianPost
+                                      [tariff] => 4
+                                      [deliveryPointCode] =>
+                                      [date] =>
+                                      [time] =>
+                                  )
+      
+                              [recipient] => Array
+                                  (
+                                      [familyName] => Петров
+                                      [firstName] => Иван
+                                      [secondName] =>
+                                      [phoneNumber] => +79774445566
+                                      [email] =>
+                                      [address] => Array
+                                          (
+                                              [raw] => 115551 Каширское шоссе 81, кв. 2
+                                          )
+      
+                                  )
+      
+                              [datePickup] =>
+                              [pickupTimePeriod] =>
+                              [comment] =>
+                              [places] => Array
+                                  (
+                                      [0] => Array
+                                          (
+                                              [items] => Array
+                                                  (
+                                                      [0] => Array
+                                                          (
+                                                              [article] => 123456
+                                                              [name] => Тестовый товар2
+                                                              [price] => 2999.99
+                                                              [count] => 1
+                                                              [weight] => 1
+                                                              [vat] => 20
+                                                          )
+      
+                                                      [1] => Array
+                                                          (
+                                                              [article] => 123453
+                                                              [name] => Тестовый товар3
+                                                              [price] => 1999.99
+                                                              [count] => 1
+                                                              [weight] => 1
+                                                              [vat] => 20
+                                                          )
+      
+                                                  )
+      
+                                          )
+      
+                                  )
+      
+                              [services] =>
+                          )
+      
+                      [deliveryService] =>
+                  )
+      
+              [parcel] =>
+              [status] => created
+              [statusReason] =>
+              [state] => failed
+              [stateMessage] => Отделение '101000' отсутствует в настройках
+              [created] => 2022-02-08T14:33:11+03:00
+              )
+           */
+        
+    }
+
+    catch (\LapayGroup\MetaShipSdk\Exceptions\MetaShipException $e) {
+        // Обработка ошибки вызова API MetaShip
+        // $e->getMessage(); текст ошибки 
+        // $e->getCode(); http код ответа сервиса MetaShip
+        // $e->getRawResponse(); // ответ сервера MetaShip как есть (http request body)
+    }
+    
+    catch (\Exception $e) {
+        // Обработка исключения
+    }
+```
+
+<a name="order-delete"><h3>Удаление заказа</h3></a>  
+Метод **deleteOrder** удаляет заказ.
+
+**Входные параметры:**
+- *string* order_id - uuid заказа в системе MetaShip.
+
+**Выходные параметры:**
+- *boolean* - при успешном удалении true
+
+**Примеры вызова:**
+```php
+<?php
+    try {
+        $Client = new LapayGroup\MetaShipSdk\Client('9e687410-62d5-5139-b712-37e7766922c6', '2091dcf8c89e12a9b8815b9e2d48d212fc9b4082d2e54a0ea4e5da260f5244ba20541d6b2e829133', 60, \LapayGroup\MetaShipSdk\Client::API_URI_TEST);
+        $Client->getJwt();
+        $result = $Client->deleteOrder('a4975b4e-8e1b-4c1e-bf08-80af8426edeb');
+    }
+
+    catch (\LapayGroup\MetaShipSdk\Exceptions\MetaShipException $e) {
+        // Обработка ошибки вызова API MetaShip
+        // $e->getMessage(); текст ошибки 
+        // $e->getCode(); http код ответа сервиса MetaShip
+        // $e->getRawResponse(); // ответ сервера MetaShip как есть (http request body)
+    }
+    
+    catch (\Exception $e) {
+        // Обработка исключения
+    }
+```
+
+
 <a name="order-statuses"><h3>История статусов заказа</h3></a>  
 Метод **getOrderStatuses** возвращает список статусов заказа
 
 **Входные параметры:**
-- *string order_id* - uuid заказа в системе MetaShip.
+- *string* order_id - uuid заказа в системе MetaShip.
 
 **Выходные параметры:**
 - *array* - список статусов

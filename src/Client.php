@@ -79,13 +79,19 @@ class Client implements LoggerAwareInterface
      * @param $type
      * @param $method
      * @param array $params
-     * @return array
+     * @return array|boolean
      * @throws MetaShipException
      */
     private function callApi($type, $method, $params = [], $data_type = self::DATA_JSON)
     {
         switch ($type) {
             case 'GET':
+                $request = http_build_query($params);
+                if ($this->logger) {
+                    $this->logger->info("MetaShip API {$type} request {$method}: " . $request);
+                }
+                $response = $this->httpClient->get($method, ['query' => $params]);
+                break;
             case 'DELETE':
                 $request = http_build_query($params);
                 if ($this->logger) {
@@ -103,19 +109,26 @@ class Client implements LoggerAwareInterface
         }
 
         $json = $response->getBody()->getContents();
+        $http_status_code = $response->getStatusCode();
 
         if ($this->logger) {
             $headers = $response->getHeaders();
-            $headers['http_status'] = $response->getStatusCode();
+            $headers['http_status'] = $http_status_code;
             $this->logger->info("MetaShip API response {$method}: " . $json, $headers);
         }
 
         $respMetaShip = json_decode($json, true);
 
-        if (empty($respMetaShip) && $json != '[]')
-            throw new MetaShipException('От сервера MetaShip при вызове метода ' . $method . ' пришел пустой ответ', $response->getStatusCode(), $json, $request);
+        if ($http_status_code == 401)
+            throw new MetaShipException('Отсутствует Bearer токен в запросе', $http_status_code, $json, $request);
 
-        return $respMetaShip;
+        if ($http_status_code == 404)
+            throw new MetaShipException('Объект не найден в базе MetaShip', $http_status_code, $json, $request);
+
+        if (empty($respMetaShip) && $json != '[]' && $http_status_code != 204)
+            throw new MetaShipException('От сервера MetaShip при вызове метода ' . $method . ' пришел пустой ответ', $http_status_code, $json, $request);
+
+        return !empty($respMetaShip) ? $respMetaShip : true;
     }
 
     /**
@@ -213,6 +226,30 @@ class Client implements LoggerAwareInterface
     }
 
     /**
+     * Получение склада забора заказов
+     *
+     * @param $warehouse_id - uuid склада в MetaShip
+     * @return array
+     * @throws MetaShipException
+     */
+    public function getWarehouse($warehouse_id)
+    {
+        return $this->callApi('GET', '/v2/customer/warehouses/'.$warehouse_id);
+    }
+
+    /**
+     * Удаление склада забора заказов
+     *
+     * @param $warehouse_id - uuid склада в MetaShip
+     * @return array
+     * @throws MetaShipException
+     */
+    public function deleteWarehouse($warehouse_id)
+    {
+        return $this->callApi('DELETE', '/v2/customer/warehouses/'.$warehouse_id);
+    }
+
+    /**
      * Получение списка офферов
      *
      * @param OfferParams $offerParams
@@ -287,5 +324,31 @@ class Client implements LoggerAwareInterface
     public function getOrderStatuses($order_id)
     {
         return $this->callApi('GET', "/v2/orders/$order_id/statuses");
+    }
+
+    /**
+     * Получение информации о заказе
+     *
+     * @param string $order_id - id заказа в системе MetaShip
+     * @return array
+     * @throws MetaShipException
+     * @throws \InvalidArgumentException
+     */
+    public function getOrderInfo($order_id)
+    {
+        return $this->callApi('GET', "/v2/orders/$order_id");
+    }
+
+    /**
+     * Удаление заказа
+     *
+     * @param string $order_id - id заказа в системе MetaShip
+     * @return array
+     * @throws MetaShipException
+     * @throws \InvalidArgumentException
+     */
+    public function deleteOrder($order_id)
+    {
+        return $this->callApi('DELETE', "/v2/orders/$order_id");
     }
 }
