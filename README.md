@@ -37,18 +37,22 @@
   - [x] [Создание заказа](#order-create)   
   - [ ] [Список заказов](#orders-list)
   - [x] [Информация о заказе](#order-info)
-  - [x] [Удаление заказа](#order-delete)   
+  - [x] [Удаление заказа](#order-delete) 
+  - [ ] [Редактирование заказа](#order-update)
   - [x] [История статусов заказа](#order-statuses)
+  - [x] [Подробной информации о заказе](#order-details)
 - [Партии](#batch)   
-  - [ ] [Создание партии](#batch-create)   
-  - [ ] [Список партий](#batch-list)   
-  - [ ] [Информация о партии](#batch-info)   
+  - [x] [Создание партии](#batch-create)   
+  - [x] [Список партий](#batch-list)   
+  - [x] [Информация о партии](#batch-info)   
   - [ ] [Обновление партии](#batch-update)   
 - [Документы](#docs)   
-    - [ ] [Получение этикетки заказа](#docs-label)   
-    - [ ] [Получение АПП](#docs-app)   
+    - [x] [Получение этикетки заказа](#docs-label)  
+    - [x] [Получение этикеток заказов из партии](#docs-parcel-labels)
+    - [x] [Получение АПП](#docs-app)   
 
 <a name="links"><h1>Changelog</h1></a>
+- 0.4.0 - Добавлена методы для работа с партиями и документами;    
 - 0.3.0 - Подробное описание [тут](https://github.com/lapaygroup/metaship-sdk/releases/tag/0.3.0);
 - 0.2.1 - Добавлен метод получения статусов заказа, добавлен OrderStatusHelper;   
 - 0.2.0 - Первая Alfa-версия SDK.   
@@ -1213,8 +1217,149 @@ catch (\Exception $e) {
     }
 ```
 
+<a name="order-details"><h3>Подробная информации о заказе</h3></a>  
+Метод **getOrderDetails** возвращает подробную информации о заказе.
+
+**Входные параметры:**
+- *string* order_id - uuid заказа в системе MetaShip.
+
+**Выходные параметры:**
+- *array* - данные о заказе
+
+**Примеры вызова:**
+```php
+<?php
+    try {
+        $Client = new LapayGroup\MetaShipSdk\Client('9e687410-62d5-5139-b712-37e7766922c6', '2091dcf8c89e12a9b8815b9e2d48d212fc9b4082d2e54a0ea4e5da260f5244ba20541d6b2e829133', 60, \LapayGroup\MetaShipSdk\Client::API_URI_TEST);
+        $Client->getJwt();
+        $result = $Client->getOrderDetails('fe1bb9da-ad8a-448c-81aa-b47a8314605b');
+        
+        /*
+         Успешный ответ 
+         Array
+         (
+            [returnItems] =>
+            [returnReason] =>
+            [delayReason] =>
+            [paymentType] =>
+            [pickupDate] =>
+         )
+         */
+    }
+
+    catch (\LapayGroup\MetaShipSdk\Exceptions\MetaShipException $e) {
+        // Обработка ошибки вызова API MetaShip
+        // $e->getMessage(); текст ошибки 
+        // $e->getCode(); http код ответа сервиса MetaShip
+        // $e->getRawResponse(); // ответ сервера MetaShip как есть (http request body)
+    }
+    
+    catch (\Exception $e) {
+        // Обработка исключения
+    }
+```
+
 <a name="batch"><h1>Партии</h1></a>
-Список методов для работы с партиями MetaShip. 
+Список методов для работы с партиями MetaShip.    
+
+<a name="batch-create"><h3>Создание партии</h3></a>  
+Метод **getOrderDetails** возвращает подробную информации о заказе.
+
+**Входные параметры:**
+- *string* order_id - uuid заказа в системе MetaShip.
+
+**Выходные параметры:**
+- *array* - данные о заказе
+
+**Примеры вызова:**
+```php
+<?php
+    try {
+        $Client = new LapayGroup\MetaShipSdk\Client('9e687410-62d5-5139-b712-37e7766922c6', '2091dcf8c89e12a9b8815b9e2d48d212fc9b4082d2e54a0ea4e5da260f5244ba20541d6b2e829133', 60, \LapayGroup\MetaShipSdk\Client::API_URI_TEST);
+        $Client->getJwt();
+        $result = $Client->createParcel(['fe1bb9da-ad8a-448c-81aa-b47a8314605b', '15344907-38f7-4086-a568-a48e0a034d6c'], '2022-02-19');
+    
+        /**
+         * Array
+            (
+                [0] => Array
+                (
+                [id] => 6bd255cf-b4d1-4bb8-8f1a-53f4d0a5177b
+                [type] => Parcel
+                [url] => /v2/parcels/6bd255cf-b4d1-4bb8-8f1a-53f4d0a5177b
+                [status] => 201
+                )
+            )
+         */
+    }
+
+    catch (\LapayGroup\MetaShipSdk\Exceptions\MetaShipException $e) {
+        // Обработка ошибки вызова API MetaShip
+        // $e->getMessage(); текст ошибки 
+        // $e->getCode(); http код ответа сервиса MetaShip
+        // $e->getRawResponse(); // ответ сервера MetaShip как есть (http request body)
+    }
+    
+    catch (\Exception $e) {
+        // Обработка исключения
+    }
+```
 
 <a name="docs"><h1>Документы</h1></a>
-Список методов для работы с документами MetaShip. 
+Список методов для работы с документами MetaShip.
+
+<a name="docs-app"><h3>Получение АПП</h3></a>  
+Метод **getParcelAcceptance** возвращает акт приема передачи.
+
+**Входные параметры:**
+- *string* order_id - uuid заказа в системе MetaShip.
+
+**Выходные параметры:**
+- *GuzzleHttp\Psr7\UploadedFile* - АПП в формате PDF
+
+**Примеры вызова:**
+```php
+<?php
+    try {
+        $Client = new LapayGroup\MetaShipSdk\Client('9e687410-62d5-5139-b712-37e7766922c6', '2091dcf8c89e12a9b8815b9e2d48d212fc9b4082d2e54a0ea4e5da260f5244ba20541d6b2e829133', 60, \LapayGroup\MetaShipSdk\Client::API_URI_TEST);
+        $Client->getJwt();
+        $result = $Client->getParcelAcceptance('6bd255cf-b4d1-4bb8-8f1a-53f4d0a5177b');
+        file_put_contents('/tmp/'.$result->getClientFilename(), $result->getStream()->getContents());
+        /**
+         * GuzzleHttp\Psr7\UploadedFile Object
+          (
+              [clientFilename:GuzzleHttp\Psr7\UploadedFile:private] => "acceptance.pdf".pdf
+              [clientMediaType:GuzzleHttp\Psr7\UploadedFile:private] => application/pdf
+              [error:GuzzleHttp\Psr7\UploadedFile:private] => 0
+              [file:GuzzleHttp\Psr7\UploadedFile:private] =>
+              [moved:GuzzleHttp\Psr7\UploadedFile:private] =>
+              [size:GuzzleHttp\Psr7\UploadedFile:private] => 23663
+              [stream:GuzzleHttp\Psr7\UploadedFile:private] => GuzzleHttp\Psr7\Stream Object
+                  (
+                      [stream:GuzzleHttp\Psr7\Stream:private] => Resource id #79
+                      [size:GuzzleHttp\Psr7\Stream:private] => 23663
+                      [seekable:GuzzleHttp\Psr7\Stream:private] => 1
+                      [readable:GuzzleHttp\Psr7\Stream:private] => 1
+                      [writable:GuzzleHttp\Psr7\Stream:private] => 1
+                      [uri:GuzzleHttp\Psr7\Stream:private] => php://temp
+                      [customMetadata:GuzzleHttp\Psr7\Stream:private] => Array
+                          (
+                          )
+          
+                  )
+          
+          )
+         */
+    }
+
+    catch (\LapayGroup\MetaShipSdk\Exceptions\MetaShipException $e) {
+        // Обработка ошибки вызова API MetaShip
+        // $e->getMessage(); текст ошибки 
+        // $e->getCode(); http код ответа сервиса MetaShip
+        // $e->getRawResponse(); // ответ сервера MetaShip как есть (http request body)
+    }
+    
+    catch (\Exception $e) {
+        // Обработка исключения
+    }
+```

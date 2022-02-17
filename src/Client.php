@@ -4,6 +4,7 @@ namespace LapayGroup\MetaShipSdk;
 
 use GuzzleHttp\Handler\CurlHandler;
 use GuzzleHttp\HandlerStack;
+use GuzzleHttp\Psr7\UploadedFile;
 use LapayGroup\MetaShipSdk\Entity\OfferParams;
 use LapayGroup\MetaShipSdk\Entity\Order;
 use LapayGroup\MetaShipSdk\Entity\Warehouse;
@@ -79,11 +80,13 @@ class Client implements LoggerAwareInterface
      * @param $type
      * @param $method
      * @param array $params
-     * @return array|boolean
+     * @return array|boolean|UploadedFile
      * @throws MetaShipException
      */
     private function callApi($type, $method, $params = [], $data_type = self::DATA_JSON)
     {
+        $is_file = false;
+
         switch ($type) {
             case 'GET':
                 $request = http_build_query($params);
@@ -110,11 +113,19 @@ class Client implements LoggerAwareInterface
 
         $json = $response->getBody()->getContents();
         $http_status_code = $response->getStatusCode();
+        $headers = $response->getHeaders();
+        $headers['http_status'] = $http_status_code;
+        $content_type = $response->getHeaderLine('Content-Type');
 
-        if ($this->logger) {
-            $headers = $response->getHeaders();
-            $headers['http_status'] = $http_status_code;
-            $this->logger->info("MetaShip API response {$method}: " . $json, $headers);
+        if (preg_match('~^application/(pdf|zip|octet-stream)~', $content_type, $matches_type)) {
+            $is_file = true;
+            if ($this->logger) {
+                $this->logger->info("MetaShip API response {$method}: получен файл с расширением ".$matches_type[1], $headers);
+            }
+        } else {
+            if ($this->logger) {
+                $this->logger->info("MetaShip API response {$method}: " . $json, $headers);
+            }
         }
 
         $respMetaShip = json_decode($json, true);
@@ -124,6 +135,18 @@ class Client implements LoggerAwareInterface
 
         if ($http_status_code == 404)
             throw new MetaShipException('Объект не найден в базе MetaShip', $http_status_code, $json, $request);
+
+        if ($is_file) {
+            $response->getBody()->rewind();
+            preg_match('~=(.+)~', $response->getHeaderLine('Content-Disposition'), $matches_name);
+            return new UploadedFile(
+                $response->getBody(),
+                $response->getBody()->getSize(),
+                UPLOAD_ERR_OK,
+                "{$matches_name[1]}.{$matches_type[1]}",
+                $response->getHeaderLine('Content-Type')
+            );
+        }
 
         if (empty($respMetaShip) && $json != '[]' && $http_status_code != 204)
             throw new MetaShipException('От сервера MetaShip при вызове метода ' . $method . ' пришел пустой ответ', $http_status_code, $json, $request);
@@ -340,6 +363,18 @@ class Client implements LoggerAwareInterface
     }
 
     /**
+     * Получение подробной информации о заказе
+     *
+     * @param string $order_id - id заказа в системе MetaShip
+     * @return array
+     * @throws MetaShipException
+     */
+    public function getOrderDetails($order_id)
+    {
+        return $this->callApi('GET', "/v2/orders/$order_id/details");
+    }
+
+    /**
      * Удаление заказа
      *
      * @param string $order_id - id заказа в системе MetaShip
@@ -350,5 +385,86 @@ class Client implements LoggerAwareInterface
     public function deleteOrder($order_id)
     {
         return $this->callApi('DELETE', "/v2/orders/$order_id");
+    }
+
+    /**
+     * Создание склада забора заказов
+     *
+     * @param array $order_ids - список id заказов в системе MetaShip
+     * @param string $shipment_date - Дата отгрузки
+     * @return array
+     * @throws MetaShipException
+     */
+    public function createParcel($order_ids, $shipment_date)
+    {
+        $shipment_date = (new \DateTime($shipment_date))->format('Y-m-d');
+        return $this->callApi('POST', '/v2/parcels', ['orderIds' => $order_ids, 'shipmentDate' => $shipment_date]);
+    }
+
+    /**
+     * Получение списка партий
+     *
+     * @param string $status - Статус партий
+     * @param string $page - Номер страницы
+     * @param string $limit - Количество партий на странице
+     * @return array|bool
+     * @throws MetaShipException
+     */
+    public function getParcels($status = null, $page = null, $limit = null)
+    {
+        $params = [];
+        if ($status) $params['status'] = $status;
+        if ($page) $params['page'] = $page;
+        if ($limit) $params['limit'] = $limit;
+        return $this->callApi('GET', "/v2/parcels", $params);
+    }
+
+    /**
+     * Получение информации о партии
+     *
+     * @param string $parcel_id - Идентификатор партии
+     * @return array
+     * @throws MetaShipException
+     */
+    public function getParcelInfo($parcel_id)
+    {
+        return $this->callApi('GET', "/v2/parcels/".$parcel_id);
+    }
+
+    /**
+     * Получение этикетки заказа
+     *
+     * @param string $order_id - id заказа в системе MetaShip
+     * @return UploadedFile
+     * @throws MetaShipException
+     */
+    public function getOrderLabel($order_id)
+    {
+        return $this->callApi('GET', "/v2/orders/$order_id/label");
+    }
+
+    /**
+     * Получение этикеток заказов из партии
+     *
+     * @param string $parcel_id - id партии в системе MetaShip
+     * @param array $order_ids - список id заказов в системе MetaShip
+     * @return UploadedFile
+     * @throws MetaShipException
+     */
+    public function getParcelLabels($parcel_id, $order_ids)
+    {
+        return $this->callApi('POST', "/v2/parcels/$parcel_id/labels", ['orderIds' => $order_ids]);
+    }
+
+    /**
+     * Получение АПП
+     *
+     * @param $parcel_id - id партии в системе MetaShip
+     * @return UploadedFile
+     * @throws MetaShipException
+     */
+    public function getParcelAcceptance($parcel_id)
+    {
+        return $this->callApi('GET', "/v2/parcels/$parcel_id/acceptance");
     }
 }
