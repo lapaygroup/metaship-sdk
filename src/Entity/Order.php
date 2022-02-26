@@ -125,7 +125,7 @@ class Order
         $params = [];
         $params['warehouse']['id'] = $this->warehouse_id;
         $params['shop']['id'] = $this->shop_id;
-        $params['shop']['number'] = $this->number;
+        $params['shop']['number'] = (string)$this->number;
         $params['payment'] = [];
         $params['dimension'] = [];
         $params['weight'] = $this->weight;
@@ -177,7 +177,7 @@ class Order
             $params['recipient']['secondName'] = $this->secondtname;
 
         if (!empty($this->phone))
-            $params['recipient']['phoneNumber'] = $this->phone;
+            $params['recipient']['phoneNumber'] = (string)$this->phone;
 
         if (!empty($this->email))
             $params['recipient']['email'] = $this->email;

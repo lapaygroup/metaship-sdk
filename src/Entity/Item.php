@@ -42,7 +42,7 @@ class Item
         $params['price'] = $this->price;
         $params['count'] = $this->count;
         $params['weight'] = $this->weight;
-        $params['vat'] = $this->vat_rate;
+        $params['vat'] = (string)$this->vat_rate;
 
         return $params;
     }
