@@ -52,6 +52,7 @@
     - [x] [Получение АПП](#docs-app)   
 
 <a name="links"><h1>Changelog</h1></a>
+- 0.4.1 - Добавлено новое исключение MetaShipValidationException для обработки 400-х ошибок API;   
 - 0.4.0 - Добавлена методы для работа с партиями и документами;    
 - 0.3.0 - Подробное описание [тут](https://github.com/lapaygroup/metaship-sdk/releases/tag/0.3.0);
 - 0.2.1 - Добавлен метод получения статусов заказа, добавлен OrderStatusHelper;   

@@ -9,6 +9,7 @@ use LapayGroup\MetaShipSdk\Entity\OfferParams;
 use LapayGroup\MetaShipSdk\Entity\Order;
 use LapayGroup\MetaShipSdk\Entity\Warehouse;
 use LapayGroup\MetaShipSdk\Exceptions\MetaShipException;
+use LapayGroup\MetaShipSdk\Exceptions\MetaShipValidationException;
 use LapayGroup\MetaShipSdk\Exceptions\TokenException;
 use LapayGroup\MetaShipSdk\Helpers\JwtSaveFileHelper;
 use LapayGroup\MetaShipSdk\Helpers\JwtSaveInterface;
@@ -136,6 +137,11 @@ class Client implements LoggerAwareInterface
         if ($http_status_code == 404)
             throw new MetaShipException('Объект не найден в базе MetaShip', $http_status_code, $json, $request);
 
+        if ($http_status_code == 400) {
+            if (empty($respMetaShip['invalid-parameters'])) $respMetaShip['invalid-parameters'] = [];
+            throw new MetaShipValidationException($respMetaShip['title'] . ': ' . $respMetaShip['details'], $http_status_code, $respMetaShip['invalid-parameters']);
+        }
+
         if ($is_file) {
             $response->getBody()->rewind();
             preg_match('~=(.+)~', $response->getHeaderLine('Content-Disposition'), $matches_name);
@@ -154,7 +160,7 @@ class Client implements LoggerAwareInterface
         return !empty($respMetaShip) ? $respMetaShip : true;
     }
 
-    /**
+    /**\
      * @return \Closure
      */
     private function handleAuthorizationHeader()
