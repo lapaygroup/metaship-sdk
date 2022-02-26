@@ -8,8 +8,9 @@ class JwtSaveFileHelper implements JwtSaveInterface
 {
     private $tmp_file = '/tmp/metashipjwt';
 
-    public function __construct()
+    public function __construct($file_name = null)
     {
+        if ($file_name) $this->tmp_file = $file_name;
         $this->createTmpFile();
     }
 
