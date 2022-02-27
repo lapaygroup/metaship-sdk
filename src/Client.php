@@ -157,7 +157,7 @@ class Client implements LoggerAwareInterface
         if (empty($respMetaShip) && $json != '[]' && $http_status_code != 204)
             throw new MetaShipException('От сервера MetaShip при вызове метода ' . $method . ' пришел пустой ответ', $http_status_code, $json, $request);
 
-        return !empty($respMetaShip) ? $respMetaShip : true;
+        return (!empty($respMetaShip) || $json == '[]') ? $respMetaShip : true;
     }
 
     /**\
