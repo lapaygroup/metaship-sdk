@@ -1197,9 +1197,12 @@ catch (\Exception $e) {
         $Client->getJwt();
         $result = $Client->getOrderStatuses('27f54969-f423-42e5-9975-b48ced0f6626');
         
-        // Проверка статуса на признак "конечный"
-        if (\LapayGroup\MetaShipSdk\Helpers\OrderStatusHelper::isFinal($result[0]['status'])) {
-            // Помечаем заказ, что проверка статусов больше не требуется
+        foreach ($result as $status) {
+          $status['name'] = \LapayGroup\MetaShipSdk\Helpers\OrderStatusHelper::getStatusByCode($status['status']); // Наименование статуса из API не возвращается
+          // Проверка статуса на признак "конечный"
+          if (\LapayGroup\MetaShipSdk\Helpers\OrderStatusHelper::isFinal($status['status'])) {
+              // Помечаем заказ, что проверка статусов больше не требуется
+          }
         }
         
         /*
