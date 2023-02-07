@@ -11,7 +11,7 @@
 
 # SDK для [интеграции с программным комплексом MetaShip API V2](https://metaship.ru).  
 
-Посмотреть все проекты или подарить автору кофе можно [тут](https://lapay.group/opensource).    
+Посмотреть все проекты или подарить автору кофе можно [тут](https://lapaygroup.ru/opensource).    
 
 [Документация к API V2](https://api.metaship.ru/doc/v2) MetaShip.    
 
