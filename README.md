@@ -76,7 +76,7 @@
 С этими данными необходимо получить токен доступа в формате JWT и сохранить его. Токен живет 1 час с момента издания.
 
 SDK позволяет сохранять JWT, для этого необходимо использовать Helper, который должен реализовывать [JwtSaveInterface](https://github.com/lapaygroup/metaship-sdk/blob/master/src/Helpers/JwtSaveInterface.php).
-В SDK встроен Helper для сохранения токена в временный файл [JwtSaveFileHelper](https://github.com/lapaygroup/metaship-sdk/blob/master/src/Helpers/JwtSaveFileHelper.php).
+В SDK встроен Helper для сохранения токена в временный файл [JwtSaveFileHelper](https://github.com/lapaygroup/metaship-sdk/blob/master/src/Helpers/JwtSaveFileHelper.php).   
 Если Helper не передан в конструктор клиента, будет использоваться [JwtSaveFileHelper](https://github.com/lapaygroup/metaship-sdk/blob/master/src/Helpers/JwtSaveFileHelper.php).
 
 ```php
