@@ -321,12 +321,12 @@ class Client implements LoggerAwareInterface
      * @param string $city_name - Название города
      * @throws MetaShipException
      */
-    public function getPvzList($delivery_code = null, $city_name = null)
+    public function getPvzList($shop_id, $delivery_code = null, $city_name = null)
     {
         if (empty($delivery_code) && empty($city_name))
             throw new \InvalidArgumentException('Вы должны указать код СД или название города');
 
-        return $this->callApi('GET', '/v2/customer/info/delivery_service_points', ['deliveryServiceCode' => $delivery_code, 'cityRaw' => $city_name]);
+        return $this->callApi('GET', '/v2/customer/info/delivery_service_points', ['shopId' => $shop_id, 'deliveryServiceCode' => $delivery_code, 'cityRaw' => $city_name]);
     }
 
     /**
