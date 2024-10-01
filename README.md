@@ -52,6 +52,7 @@
     - [x] [Получение АПП](#docs-app)
 
 <a name="links"><h1>Changelog</h1></a>
+- 0.5.1 - Добавляет параметр options в метод getPvzList;    
 - 0.5.0 - Добавляет параметр shop_id в метод getPvzList;
 - 0.4.6 - Добавлены зависимости guzzle ^7.0 и psr/log ^2.0|^3.0;
 - 0.4.5 - В OrderStatusHelper добавлен справочник наименований статусов MetaShip;
