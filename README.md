@@ -1374,3 +1374,279 @@ catch (\Exception $e) {
         // Обработка исключения
     }
 ```
+
+<a name="docs"><h1>Прочее</h1></a>
+Прочая информация.
+
+<a name="docs-app"><h3>Получение интервалов доставки</h3></a>
+Метод **getDeliveryTimeSchedules** интервалов доставки в зависимости от переданной КС.
+Реализовано для следующих Служб доставки:
+– TopDelivery
+– Boxberry
+– Dalli
+– СДЭК
+
+**Входные параметры:** =  ,  = null
+- *string|null $delivery_code* - Код СД;
+- *array $options* - параметры для конкретной КС.
+
+**Выходные параметры:**
+- *array* - Список интервалов доставки.
+
+
+**Примеры вызова:**
+
+```php
+<?php
+    try {
+        $Client = new LapayGroup\MetaShipSdk\Client('9e687410-62d5-5139-b712-37e7766922c6', '2091dcf8c89e12a9b8815b9e2d48d212fc9b4082d2e54a0ea4e5da260f5244ba20541d6b2e829133', 60, \LapayGroup\MetaShipSdk\Client::API_URI_TEST);
+        $Client->getJwt();
+        
+        //Dalli
+        $params = [
+            'shopId' => '6d583c5d-0407-446a-ba69-741907f8171b', 
+            'deliveryDate' => '2025-07-11',
+            'tariffId' => '11',
+        ];
+        
+        $result = $client->getDeliveryTimeSchedules(\LapayGroup\MetaShipSdk\Enum\DeliveryServiceCode::DALLI, $params);
+        /**
+            Успешный ответ
+            Array
+            (
+                [schedule] => intervals
+                [intervals] => Array
+                    (
+                        [0] => Array
+                            (
+                                [date] => 
+                                [from] => 09:00
+                                [to] => 13:00
+                                [zone] => 1 Москва
+                            )
+            
+                        [1] => Array
+                            (
+                                [date] => 
+                                [from] => 09:00
+                                [to] => 13:00
+                                [zone] => 2 Москва
+                            )
+            
+                        [2] => Array
+                            (
+                                [date] => 
+                                [from] => 09:00
+                                [to] => 13:00
+                                [zone] => 0 Москва
+                            )
+            
+                        [3] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 16:00
+                                [zone] => 3 Москва
+                            )
+            
+                        [4] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 17:00
+                                [zone] => 0 Москва
+                            )
+            
+                        [5] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 17:00
+                                [zone] => 1 Москва
+                            )
+            
+                        [6] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 17:00
+                                [zone] => 2 Москва
+                            )
+            
+                        [7] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 18:00
+                                [zone] => 1 Москва
+                            )
+            
+                        [8] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 18:00
+                                [zone] => 0 Москва
+                            )
+            
+                        [9] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 18:00
+                                [zone] => 3 Москва
+                            )
+            
+                        [10] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 18:00
+                                [zone] => 2 Москва
+                            )
+            
+                        [11] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 18:00
+                                [zone] => 4 Москва
+                            )
+            
+                        [12] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 22:00
+                                [zone] => 2 Москва
+                            )
+            
+                        [13] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 22:00
+                                [zone] => 4 Москва
+                            )
+            
+                        [14] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 22:00
+                                [zone] => 3 Москва
+                            )
+            
+                        [15] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 22:00
+                                [zone] => 0 Москва
+                            )
+            
+                        [16] => Array
+                            (
+                                [date] => 
+                                [from] => 10:00
+                                [to] => 22:00
+                                [zone] => 1 Москва
+                            )
+            
+                        [17] => Array
+                            (
+                                [date] => 
+                                [from] => 11:00
+                                [to] => 15:00
+                                [zone] => 1 Москва
+                            )
+            
+                        [18] => Array
+                            (
+                                [date] => 
+                                [from] => 11:00
+                                [to] => 15:00
+                                [zone] => 2 Москва
+                            )
+            
+                        [19] => Array
+                            (
+                                [date] => 
+                                [from] => 11:00
+                                [to] => 15:00
+                                [zone] => 0 Москва
+                            )
+            
+                        [20] => Array
+                            (
+                                [date] => 
+                                [from] => 12:00
+                                [to] => 22:00
+                                [zone] => 3 Москва
+                            )
+            
+                        [21] => Array
+                            (
+                                [date] => 
+                                [from] => 14:00
+                                [to] => 18:00
+                                [zone] => 2 Москва
+                            )
+            
+                        [22] => Array
+                            (
+                                [date] => 
+                                [from] => 14:00
+                                [to] => 18:00
+                                [zone] => 0 Москва
+                            )
+            
+                        [23] => Array
+                            (
+                                [date] => 
+                                [from] => 14:00
+                                [to] => 18:00
+                                [zone] => 1 Москва
+                            )
+            
+                        [24] => Array
+                            (
+                                [date] => 
+                                [from] => 18:00
+                                [to] => 22:00
+                                [zone] => 2 Москва
+                            )
+            
+                        [25] => Array
+                            (
+                                [date] => 
+                                [from] => 18:00
+                                [to] => 22:00
+                                [zone] => 1 Москва
+                            )
+            
+                        [26] => Array
+                            (
+                                [date] => 
+                                [from] => 18:00
+                                [to] => 22:00
+                                [zone] => 0 Москва
+                            )
+            
+                    )
+            
+            )
+         */
+    }
+
+    catch (\LapayGroup\MetaShipSdk\Exceptions\MetaShipException $e) {
+        // Обработка ошибки вызова API MetaShip
+        // $e->getMessage(); текст ошибки
+        // $e->getCode(); http код ответа сервиса MetaShip
+        // $e->getRawResponse(); // ответ сервера MetaShip как есть (http request body)
+    }
+
+    catch (\Exception $e) {
+        // Обработка исключения
+    }
+```

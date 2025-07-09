@@ -482,4 +482,26 @@ class Client implements LoggerAwareInterface
     {
         return $this->callApi('GET', "/v2/parcels/$parcel_id/acceptance");
     }
+
+    /**
+     * Получение интервалов доставки
+     *
+     * @param $delivery_code - Код службы доставки
+     * @param array $options
+     * @return array
+     * @throws MetaShipException
+     */
+    public function getDeliveryTimeSchedules($delivery_code, $options = [])
+    {
+        if (empty($delivery_code))
+            throw new \InvalidArgumentException('Вы должны указать код СД');
+
+        $params = ['deliveryServiceCode' => $delivery_code];
+
+        if (!empty($options)) {
+            $params = array_merge($options, $params);
+        }
+
+        return $this->callApi('GET', '/v2/info/delivery_time_schedules', $params);
+    }
 }
