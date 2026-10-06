@@ -39,6 +39,15 @@ class OfferParams
     /** @var string|null */
     private $delivery_service_code = null; // Код СД (Должен быть указан совместно с deliveryPointNumber)
 
+    /** @var integer|null */
+    private $errors = null; // Показывать ошибки. По-умолчанию 0
+
+    /** @var string|null */
+    private $country_code = null; // Код страны доставки Available values : KZ, BY, RU, KG, AM, TJ
+
+    /** @var string|null */
+    private $intake_point_number = null; // Идентификатор точки сдачи
+
     /**
      * Формирует массив параметров для запроса к API
      *
@@ -71,6 +80,14 @@ class OfferParams
         if (!empty($this->delivery_service_code))
             $params['deliveryServiceCode'] = $this->delivery_service_code;
 
+        if (!empty($this->errors))
+            $params['errors'] = (int) $this->errors;
+
+        if (!empty($this->country_code))
+            $params['countryCode'] = $this->country_code;
+
+        if (!empty($this->intake_point_number))
+            $params['intakePointNumber'] = $this->intake_point_number;
 
         return $params;
     }
@@ -265,5 +282,53 @@ class OfferParams
     public function setDeliveryServiceCode($delivery_service_code)
     {
         $this->delivery_service_code = $delivery_service_code;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getErrors()
+    {
+        return $this->errors;
+    }
+
+    /**
+     * @param int|null $errors
+     */
+    public function setErrors($errors)
+    {
+        $this->errors = $errors;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getCountryCode()
+    {
+        return $this->country_code;
+    }
+
+    /**
+     * @param string|null $country_code
+     */
+    public function setCountryCode($country_code)
+    {
+        $this->country_code = $country_code;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getIntakePointNumber()
+    {
+        return $this->intake_point_number;
+    }
+
+    /**
+     * @param string|null $intake_point_number
+     */
+    public function setIntakePointNumber($intake_point_number)
+    {
+        $this->intake_point_number = $intake_point_number;
     }
 }
